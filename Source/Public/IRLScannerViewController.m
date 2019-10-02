@@ -146,7 +146,7 @@
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
     [self.cameraView prepareForOrientationChange];
     
-    __weak typeof(self) weakSelf = self;
+    __weak __typeof(self) weakSelf = self;
     [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
         // we just want the completion handler
         
@@ -378,7 +378,7 @@
 #pragma mark - IRLCameraViewProtocol
 
 -(void)didLostConfidence:(IRLCameraView*)view {
-    __weak  typeof(self) weakSelf = self;
+    __weak  __typeof(self) weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
         [[weakSelf adjust_bar] setHidden:NO];
         [weakSelf updateTitleLabel:nil];
@@ -387,7 +387,7 @@
 }
 
 -(void)didDetectRectangle:(IRLCameraView*)view withConfidence:(NSUInteger)confidence {
-    __weak  typeof(self) weakSelf = self;
+    __weak  __typeof(self) weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
         if (confidence > view.minimumConfidenceForFullDetection) {
             NSInteger range     = view.maximumConfidenceForFullDetection - view.minimumConfidenceForFullDetection;
@@ -417,7 +417,7 @@
 }
 
 -(void)didGainFullDetectionConfidence:(IRLCameraView*)view {
-    __weak  typeof(self) weakSelf = self;
+    __weak  __typeof(self) weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
         [[weakSelf adjust_bar] setHidden:YES];
         [weakSelf.titleLabel setHidden:YES];
