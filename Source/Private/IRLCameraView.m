@@ -184,7 +184,7 @@ CGImagePropertyOrientation imagePropertyOrientationForUIImageOrientation(UIImage
     [self bringSubviewToFront:self.transitionSnapsot];
     
     // Animat the fade out
-    __weak typeof(self) weakSelf = self;
+    __weak __typeof(self) weakSelf = self;
     [UIView animateWithDuration:0.3 animations:^{
         weakSelf.transitionSnapsot.alpha = 0;
     } completion:^(BOOL finished) {
@@ -260,6 +260,35 @@ CGImagePropertyOrientation imagePropertyOrientationForUIImageOrientation(UIImage
     [dataOutput setSampleBufferDelegate:self queue:queue];
     [session addOutput:dataOutput];
     
+    CMVideoDimensions resolution = CMVideoFormatDescriptionGetDimensions(device.activeFormat.formatDescription);
+    int videoWidth, videoHeight;
+    CGRect newFrame = CGRectZero;
+    CGRect maxFrame = [UIScreen mainScreen].bounds;
+    switch ([[UIApplication sharedApplication] statusBarOrientation]) {
+        case UIInterfaceOrientationLandscapeLeft:
+        case UIInterfaceOrientationLandscapeRight:
+            videoWidth = resolution.width;
+            videoHeight = resolution.height;
+            break;
+        default:
+            videoWidth = resolution.height;
+            videoHeight = resolution.width;
+            break;
+    }
+    if (videoWidth * CGRectGetHeight(maxFrame) > CGRectGetWidth(maxFrame) * videoHeight) {
+        newFrame.size.width = CGRectGetWidth(maxFrame);
+        newFrame.size.height = CGRectGetWidth(maxFrame) * videoHeight / videoWidth;
+        newFrame.origin.x = 0.0f;
+        newFrame.origin.y = CGRectGetHeight(maxFrame) - newFrame.size.height;
+    } else {
+        newFrame.size.width = CGRectGetHeight(maxFrame) * videoWidth / videoHeight;
+        newFrame.size.height = CGRectGetHeight(maxFrame);
+        newFrame.origin.x = (CGRectGetWidth(maxFrame) - newFrame.size.width) / 2.0f;
+        newFrame.origin.y = 0.0f;
+    }
+    self.frame = newFrame;
+    
+
     // Preview Layer
     [self createGLKView];
 
@@ -360,7 +389,7 @@ CGImagePropertyOrientation imagePropertyOrientationForUIImageOrientation(UIImage
 
 - (void)focusAtPoint:(CGPoint)point completionHandler:(void(^)(void))completionHandler {
     
-    __weak typeof(self) weakSelf = self;
+    __weak __typeof(self) weakSelf = self;
     
     dispatch_async(dispatch_get_main_queue(), ^{
         CGPoint pointOfInterest = CGPointZero;
@@ -375,7 +404,7 @@ CGImagePropertyOrientation imagePropertyOrientationForUIImageOrientation(UIImage
     
     if (self.isCapturing || self.window == nil) return;
     
-    __weak typeof(self) weakSelf = self;
+    __weak __typeof(self) weakSelf = self;
     
     self.isCapturing = YES;
     
@@ -465,7 +494,7 @@ CGImagePropertyOrientation imagePropertyOrientationForUIImageOrientation(UIImage
 }
 
 - (void)hideGLKView:(BOOL)hidden completion:(void(^)(void))completion {
-    __weak typeof(self) weakSelf = self;
+    __weak __typeof(self) weakSelf = self;
     [UIView animateWithDuration:0.1 animations:^{
         weakSelf.glkView.alpha = (hidden) ? 0.0 : 1.0;
         
@@ -580,7 +609,7 @@ CGImagePropertyOrientation imagePropertyOrientationForUIImageOrientation(UIImage
     if (self.forceStop || self.isRotating) return;
     if (_isStopped || self.isCapturing || !CMSampleBufferIsValid(sampleBuffer)) return;
     
-    __weak  typeof(self) weakSelf = self;
+    __weak  __typeof(self) weakSelf = self;
     
     // Get The Pixel Buffer here
     CVPixelBufferRef pixelBuffer = (CVPixelBufferRef)CMSampleBufferGetImageBuffer(sampleBuffer);
